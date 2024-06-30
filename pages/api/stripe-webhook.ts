@@ -61,9 +61,9 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       // @ts-ignore
       switch (paymentIntent.amount_subtotal) {
         case 300:
-          creditAmount = 25;
+          creditAmount = 20;
           break;
-        case 500:
+        case 600:
           creditAmount = 50;
           break;
         case 1000:

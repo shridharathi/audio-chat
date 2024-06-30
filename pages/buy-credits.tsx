@@ -44,8 +44,8 @@ export default function Pricing() {
           // @ts-ignore
           //trigger
           <stripe-pricing-table
-            pricing-table-id="prctbl_1PXScvEIPzBxp1oY5EWJN8hA"
-            publishable-key="pk_live_51PDyCAEIPzBxp1oYvh8jWpsY4Aj3sPXzkx0nRcRzfyOC95ouUtfDxMH9dzNE93zSCwxFadvnS5ywO9ye5msDGpZv00hQ53Xmsl"
+            pricing-table-id="prctbl_1PXTnkHRTS6q6Af4w2EanxZO"
+            publishable-key="pk_test_51PXTdoHRTS6q6Af4iibrMxUMn3L3526zqmHfyVQaPtXjLwtwl7qU0GCTi86Y431oyWEjqV5r0adwi66TUVsMoAEF00Dw4WeS0I"
             client-reference-id={session.user.email}
             customer-email={session.user.email}
           />
