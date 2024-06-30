@@ -3,7 +3,7 @@ import Script from "next/script";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import Head from "next/head";
-import useSWR from "swr";
+import useSWR from "swr";   //f
 
 export default function Pricing() {
   const { data: session } = useSession();
