@@ -14,7 +14,7 @@ export default function Pricing() {
   return (
     <div className="flex mx-auto max-w-7xl overflow-visible flex-col items-center justify-center py-2 min-h-screen">
       <Head>
-        <title>Buy RoomGPT Credits</title>
+        <title>Buy FilterAI Credits</title>
       </Head>
       <Script src="https://js.stripe.com/v3/pricing-table.js" />
       <Script src="https://cdn.paritydeals.com/banner.js" />
@@ -26,7 +26,7 @@ export default function Pricing() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
             <p className="mt-2 text-4xl font-bold tracking-tight text-black sm:text-5xl">
-              Buy Room Genius Credits
+              Buy Filter AI Credits
             </p>
           </div>
         </div>
@@ -44,7 +44,7 @@ export default function Pricing() {
           // @ts-ignore
           //trigger
           <stripe-pricing-table
-            pricing-table-id="prctbl_1PLIfmEIPzBxp1oY6ueSxCDp"
+            pricing-table-id="prctbl_1PXScvEIPzBxp1oY5EWJN8hA"
             publishable-key="pk_live_51PDyCAEIPzBxp1oYvh8jWpsY4Aj3sPXzkx0nRcRzfyOC95ouUtfDxMH9dzNE93zSCwxFadvnS5ywO9ye5msDGpZv00hQ53Xmsl"
             client-reference-id={session.user.email}
             customer-email={session.user.email}

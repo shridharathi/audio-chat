@@ -12,19 +12,19 @@ const Home: NextPage = () => {
   return (
     <div className="flex max-w-6xl mx-auto flex-col items-center justify-center py-2 min-h-screen">
       <Head>
-        <title>Room Genius</title>
+        <title>FilterAI</title>
       </Head>
       <Header />
       <main className="flex flex-1 w-full flex-col items-center justify-center text-center px-4 mt-20">
         <h1 className="mx-auto max-w-4xl font-display text-5xl font-bold tracking-normal text-slate-900 sm:text-7xl">
-          Your{' '}
-          <span className="relative whitespace-nowrap text-[#808000]">
+          Make Your Own{' '}
+          <span className="relative whitespace-nowrap text-[#b87df9]">
             <span className="relative">AI</span>
-          </span> Interior Designer{' '}
+          </span> Filters
         </h1>
 
         <p className="mx-auto mt-12 max-w-xl text-lg text-slate-700 leading-7">
-          Want to redesign any room in your house? Upload an image and describe what you want to see!
+          Upload an image of yourself, describe what your filter, and let AI do the rest.
         </p>
         <div className="flex justify-center space-x-4">
           <Link
@@ -37,84 +37,52 @@ const Home: NextPage = () => {
        
         <div className="flex justify-between items-center w-full flex-col sm:mt-10 mt-6">
           <div className="flex flex-col space-y-10 mt-4">
-            <div className="flex sm:space-x-2 sm:flex-row flex-col">
+            <div className="flex sm:space-x-4 sm:flex-row flex-col">
               <div>
                 <h2 className="mb-1 font-medium text-lg ">Original Photo</h2>
                 <Image
                   alt="Original"
-                  src="/old.png"
+                  src="/jess.png"
                   className="w-160 h-75 rounded-2xl mr-4"
                   width={500}
                   height={500}
                 />
               </div>
               <div className="sm:mt-0 mt-8">
-                <h2 className="mb-1 font-medium text-lg">"Bohemian bungalow with tropical plants"</h2>
+                <h2 className="mb-1 font-medium text-lg">"Anime"</h2>
                 <Image
                   alt="New"
                   width={500}
                   height={500}
-                  src="/new.png"
+                  src="/jess_anime.png"
                   className="w-160 h-75 rounded-2xl sm:mt-0 mt-2"
                 />
               </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex justify-between items-center w-full flex-col sm:mt-10 mt-6">
-          <div className="flex flex-col space-y-10 mt-4">
-            <div className="flex sm:space-x-2 sm:flex-row flex-col">
               <div>
                 <h2 className="mb-1 font-medium text-lg ">Original Photo</h2>
                 <Image
                   alt="Original"
-                  src="/old-kitchen.png"
+                  src="/man.png"
                   className="w-160 h-75 rounded-2xl mr-4"
                   width={500}
                   height={500}
                 />
               </div>
               <div className="sm:mt-0 mt-8">
-                <h2 className="mb-1 font-medium text-lg">"Updated, rustic, stainless-steel Brooklyn kitchen"</h2>
+                <h2 className="mb-1 font-medium text-lg">"GTA Character"</h2>
                 <Image
                   alt="New"
                   width={500}
                   height={500}
-                  src="/new-kitchen.png"
+                  src="/man-gta.png"
                   className="w-160 h-75 rounded-2xl sm:mt-0 mt-2"
                 />
               </div>
             </div>
           </div>
         </div>
-        
-        <div className="flex justify-between items-center w-full flex-col sm:mt-10 mt-6">
-          <div className="flex flex-col space-y-10 mt-4 mb-16">
-            <div className="flex sm:space-x-2 sm:flex-row flex-col">
-              <div>
-                <h2 className="mb-1 font-medium text-lg ">Original Photo</h2>
-                <Image
-                  alt="Original"
-                  src="/dorm-old.jpg"
-                  className="w-160 h-75 rounded-2xl mr-4"
-                  width={500}
-                  height={500}
-                />
-              </div>
-              <div className="sm:mt-0 mt-8">
-                <h2 className="mb-1 font-medium text-lg">"Cute, modern Pinterest sorority dorm room"</h2>
-                <Image
-                  alt="New"
-                  width={500}
-                  height={500}
-                  src="/dorm-new.png"
-                  className="w-160 h-75 rounded-2xl sm:mt-0 mt-2"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+
+
       </main>
       <Footer />
     </div>

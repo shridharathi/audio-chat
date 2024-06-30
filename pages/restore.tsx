@@ -57,7 +57,7 @@ const Home: NextPage = () => {
       if (!isSafe) {
         return { errorMessage: 'Detected a NSFW image which is not allowed.' };
       }
-      if (data.remainingGenerations === 0) {
+      if (data.remainingGenerations <= 0) {
         return { errorMessage: 'You have no remaining credits.' };
       }
       return undefined;
@@ -110,7 +110,7 @@ const Home: NextPage = () => {
       setError("Failed to process image.");
     } else {
       mutate();
-      setRestoredImage(newPhoto[1]);
+      setRestoredImage(newPhoto[0]);
     }
     setLoading(false);
   }
@@ -125,8 +125,8 @@ const Home: NextPage = () => {
       <Header photo={session?.user?.image || undefined} gens={data?.remainingGenerations ? Number(data.remainingGenerations) : 0} />
       <main className="flex flex-1 w-full flex-col items-center justify-center text-center px-4 mt-4 sm:mb-0 mb-8">
       
-        <h1 className="mx-auto max-w-4xl font-display text-4xl font-bold tracking-normal text-slate-900 sm:text-6xl mb-5">
-          Redesign rooms with AI
+        <h1 className="mx-auto max-w-4xl font-display text-2xl font-bold tracking-normal text-slate-900 sm:text-4xl mb-2">
+          Transform Your Look
         </h1>
         {status === 'authenticated' && data && (
           <p className="text-slate-500">

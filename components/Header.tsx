@@ -13,12 +13,12 @@ export default function Header({ photo, gens }: HeaderProps) {
         <Image
           alt="header text"
           src="/icon.png"
-          className="sm:w-10 sm:h-10 w-7 h-7"
-          width={20}
-          height={20}
+          className="sm:w-7 sm:h-7 w-7 h-7"
+          width={10}
+          height={10}
         />
         <h1 className="sm:text-2xl text-xl font-bold ml-2 tracking-tight">
-          room genius
+           Filter AI
         </h1>
       </Link>
 
@@ -53,7 +53,7 @@ export default function Header({ photo, gens }: HeaderProps) {
             href="/restore"
             className="border-gray-300 pr-4 space-x-2 hover:text-blue-400 transition hidden sm:flex"
           >
-            <p className="font-medium text-base">Restore</p>
+            <p className="font-medium text-base">Filters</p>
           </Link>
         </div>
       )}

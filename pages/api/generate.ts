@@ -45,57 +45,18 @@ export default async function handler(
   });
 
   // Check if user has any credits left
-  if (user?.credits === 0) {
+  if (user?.credits <= 0) {
     return res.status(400).json(`You have no generations left`);
   }
 
-  // If they have credits, decrease their credits by one and continue
-  /*
-  await prisma.user.update({
-    where: {
-      email: session.user.email!,
-    },
-    data: {
-      credits: {
-        decrement: 1,
-      },
-    },
-  });
-  */
 
-  // Rate Limiting by user email
-  /*
-  if (ratelimit) {
-    const identifier = session.user.email;
-    const result = await ratelimit.limit(identifier!);
-    res.setHeader("X-RateLimit-Limit", result.limit);
-    res.setHeader("X-RateLimit-Remaining", result.remaining);
+  
 
-    // Calcualte the remaining time until generations are reset
-    const diff = Math.abs(
-      new Date(result.reset).getTime() - new Date().getTime()
-    );
-    //const hours = Math.floor(diff / 1000 / 60 / 60);
-    //const minutes = Math.floor(diff / 1000 / 60) - hours * 60;
-    const hours = 0;
-    const minutes = 0;
-
-    if (!result.success) {
-      return res
-        .status(429)
-        .json(
-          `You need more credits!`
-        );
-    }
-  }
-  */
-
-  //const versionId = "76604baddc85b1b4616e1c6475eca080da339c8875bd4996705440484a6eac38";
-  const versionId = "854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b";
+  const versionId = "2bca10ed539cf2196f18b4ec85128a80355d94934db8620884ecca552cdc4def";
   const imageUrl = req.body.imageUrl;
   const prompt = req.body.prompt;
-  const negativePrompt = "illustration, painting, cartoon, worst quality, low quality, lowres, watermark, banner, logo, watermark, contactinfo, text, deformed, blurry, blur, out of focus, out of frame, surreal, extra, ugly, upholstered walls, fabric walls, plush walls, mirror, mirrored, functional";
-  const aPrompt = "room, bedroom, bathroom, kitchen, dining room, realistic, cinematic photo, highly detailed, cinematic lighting, ultra-detailed, ultrarealistic, photorealism, 8k., masterpiece, cinematic light, ultrarealistic+, photorealistic+, 8k, raw photo, realistic, hyperrealistic, highest quality, best quality, highly detailed, masterpiece, best quality, extremely detailed 8k wallpaper, masterpiece, best quality, ultra-detailed, best shadow, detailed background, high contrast, best illumination, detailed face, dulux, caustic, dynamic angle, detailed glow. dramatic lighting, highly detailed, insanely detailed hair, symmetrical, intricate details, professionally retouched, 8k high definition. strong bokeh. award winning photo.";
+  //const negativePrompt = "worst quality, low quality, lowres, watermark, banner, logo, watermark, contactinfo, text, deformed, blurry, blur, out of focus, out of frame, surreal, extra, ugly";
+  //const aPrompt = "room, bedroom, bathroom, kitchen, dining room, realistic, cinematic photo, highly detailed, cinematic lighting, ultra-detailed, ultrarealistic, photorealism, 8k., masterpiece, cinematic light, ultrarealistic+, photorealistic+, 8k, raw photo, realistic, hyperrealistic, highest quality, best quality, highly detailed, masterpiece, best quality, extremely detailed 8k wallpaper, masterpiece, best quality, ultra-detailed, best shadow, detailed background, high contrast, best illumination, detailed face, dulux, caustic, dynamic angle, detailed glow. dramatic lighting, highly detailed, insanely detailed hair, symmetrical, intricate details, professionally retouched, 8k high definition. strong bokeh. award winning photo.";
   const timeoutDuration = 12000;
   
   // POST request to Replicate to start the image restoration generation process
@@ -107,7 +68,7 @@ export default async function handler(
     },
     body: JSON.stringify({
       version: versionId,
-      input: { image: imageUrl, prompt: prompt, a_prompt: aPrompt, n_prompt: negativePrompt},
+      input: { image: imageUrl, prompt: prompt, upscale: 2},
     }),
   });
 
