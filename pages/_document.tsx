@@ -8,27 +8,19 @@ class MyDocument extends Document {
           <link rel="icon" href="/favicon.ico" />
           <meta
             name="description"
-            content="Your AI Interior Designer."
+            content="Create AI Filters"
           />
           <meta property="og:site_name" content="room-genius-xi.vercel.app" />
           <meta
             property="og:description"
-            content="Your AI Interior Designer."
+            content="Create AI Filters"
           />
-          <meta property="og:title" content="AI Interior Designer" />
+          <meta property="og:title" content="FilterAI" />
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content="AI Interior Designer" />
+          <meta name="twitter:title" content="FilterAI" />
           <meta
             name="twitter:description"
-            content="Your AI Interior Designer."
-          />
-          <meta
-            property="og:image"
-            content="https://room-genius-xi.vercel.app/og-image.png"
-          />
-          <meta
-            name="twitter:image"
-            content="https://room-genius-xi.vercel.app/og-image.png"
+            content="Create AI Filters"
           />
         </Head>
         <body>
