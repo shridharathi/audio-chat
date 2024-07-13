@@ -122,7 +122,7 @@ export default function Pricing() {
               clipRule="evenodd"
             />
           </svg>
-          Early access to new features
+          Early access to new features!
         </li>
       </ul>
       <p className="text-gray-400 mb-5">
