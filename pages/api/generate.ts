@@ -60,6 +60,14 @@ export default async function handler(
   const condition_scale = 0.6;
   const strength = 0.7;
   const guidance_scale = 18.28;
+  const refine = "no_refiner";
+  const scheduler = "K_EULER";
+  const lora_scale = 0.95;
+  const lora_weights = "https://pbxt.replicate.delivery/mwN3AFyYZyouOB03Uhw8ubKW9rpqMgdtL9zYV9GF2WGDiwbE/trained_model.tar";
+  const refine_steps = 20;
+  const num_inference_steps = 30;
+
+
 
   //const negativePrompt = "worst quality, low quality, lowres, watermark, banner, logo, watermark, contactinfo, text, deformed, blurry, blur, out of focus, out of frame, surreal, extra, ugly";
   //const aPrompt = "room, bedroom, bathroom, kitchen, dining room, realistic, cinematic photo, highly detailed, cinematic lighting, ultra-detailed, ultrarealistic, photorealism, 8k., masterpiece, cinematic light, ultrarealistic+, photorealistic+, 8k, raw photo, realistic, hyperrealistic, highest quality, best quality, highly detailed, masterpiece, best quality, extremely detailed 8k wallpaper, masterpiece, best quality, ultra-detailed, best shadow, detailed background, high contrast, best illumination, detailed face, dulux, caustic, dynamic angle, detailed glow. dramatic lighting, highly detailed, insanely detailed hair, symmetrical, intricate details, professionally retouched, 8k high definition. strong bokeh. award winning photo.";
@@ -74,7 +82,7 @@ export default async function handler(
     },
     body: JSON.stringify({
       version: versionId,
-      input: { image: imageUrl, prompt: prompt, img2img: img2img, condition_scale: condition_scale, strength: strength, guidance_scale: guidance_scale },
+      input: { image: imageUrl, prompt: prompt, img2img: img2img, condition_scale: condition_scale, strength: strength, guidance_scale: guidance_scale, refine: refine, scheduler: scheduler, lora_scale: lora_scale, lora_weights: lora_weights, refine_steps: refine_steps, num_inference_steps: num_inference_steps },
     }),
   });
 
