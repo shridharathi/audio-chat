@@ -58,7 +58,7 @@ export default async function handler(
   const prompt = req.body.prompt;
   const img2img = true;
   const condition_scale = 0.6;
-  const strength = 0.7;
+  const strength = 0.9;
   const guidance_scale = 18.28;
   const refine = "no_refiner";
   const scheduler = "K_EULER";
