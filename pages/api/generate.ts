@@ -84,7 +84,7 @@ export default async function handler(
     },
     body: JSON.stringify({
       version: versionId,
-      input: { image: imageUrl, prompt: prompt, img2img: img2img, condition_scale: condition_scale, strength: strength, guidance_scale: guidance_scale, refine: refine, scheduler: scheduler, lora_scale: lora_scale, lora_weights: lora_weights, refine_steps: refine_steps, num_inference_steps: num_inference_steps, negative_prompt: negativePrompt },
+      input: { image: imageUrl, prompt: prompt, img2img: img2img, condition_scale: condition_scale, strength: strength, guidance_scale: guidance_scale, refine: refine, scheduler: scheduler, lora_scale: lora_scale, lora_weights: lora_weights, refine_steps: refine_steps, num_inference_steps: num_inference_steps },
     }),
   });
 
