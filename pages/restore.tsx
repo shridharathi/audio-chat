@@ -20,6 +20,7 @@ import va from '@vercel/analytics';
 import { useSession, signIn } from 'next-auth/react';
 import useSWR from 'swr';
 import { Rings } from 'react-loader-spinner';
+import DropDown from "../components/DropDown";
 
 const Home: NextPage = () => {
   const [originalPhoto, setOriginalPhoto] = useState<string | null>(null);
@@ -35,6 +36,39 @@ const Home: NextPage = () => {
   const { data, mutate } = useSWR('/api/remaining', fetcher);
   const { data: session, status } = useSession();
 
+
+  const [showDropDown, setShowDropDown] = useState<boolean>(false);
+  const [selectCity, setSelectCity] = useState<string>("");
+  const cities = () => {
+    return ["Hong Kong", "London", "New York City", "Paris"];
+  };
+
+  const toggleDropDown = () => {
+    setShowDropDown(!showDropDown);
+  };
+
+    /**
+   * Hide the drop down menu if click occurs
+   * outside of the drop-down element.
+   *
+   * @param event  The mouse event
+   */
+  const dismissHandler = (event: React.FocusEvent<HTMLButtonElement>): void => {
+    if (event.currentTarget === event.target) {
+      setShowDropDown(false);
+    }
+  };
+
+  /**
+   * Callback function to consume the
+   * city name from the child component
+   *
+   * @param city  The selected city
+   */
+  const citySelection = (city: string): void => {
+    setSelectCity(city);
+  };
+  
   const options: UploadWidgetConfig = {
     apiKey: !!process.env.NEXT_PUBLIC_UPLOAD_API_KEY
       ? process.env.NEXT_PUBLIC_UPLOAD_API_KEY
@@ -200,7 +234,32 @@ const Home: NextPage = () => {
                 width={400}
                 height={400}
               />
+
+              
           )}
+
+          {originalPhoto && !restoredImage && (
+             <button
+             className={showDropDown ? "active" : undefined}
+             onClick={(): void => toggleDropDown()}
+             onBlur={(e: React.FocusEvent<HTMLButtonElement>): void =>
+               dismissHandler(e)
+             }
+           >
+             <div>{selectCity ? "Select: " + selectCity : "Select ..."} </div>
+             {showDropDown && (
+               <DropDown
+                 cities={cities()}
+                 showDropDown={false}
+                 toggleDropDown={(): void => toggleDropDown()}
+                 citySelection={citySelection}
+               />
+             )}
+           </button>   
+          )}
+
+
+
           {status === 'authenticated' && (
           <div>
           <label htmlFor="textInput"></label>
