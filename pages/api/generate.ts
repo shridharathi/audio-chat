@@ -6,7 +6,7 @@ import { authOptions } from "./auth/[...nextauth]";
 import prisma from "../../lib/prismadb";
 
 export const config = {
-  runtime: "edge",
+  maxDuration: 60
 };
 
 
