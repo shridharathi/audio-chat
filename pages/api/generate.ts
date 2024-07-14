@@ -5,6 +5,11 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "./auth/[...nextauth]";
 import prisma from "../../lib/prismadb";
 
+export const config = {
+  runtime: "edge",
+};
+
+
 type Data = string;
 interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
