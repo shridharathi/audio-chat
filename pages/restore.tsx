@@ -97,13 +97,19 @@ const Home: NextPage = () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
     setLoading(true);
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
     const res = await fetch('/api/generate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ imageUrl: fileUrl, prompt: prompt }),
+      signal: new AbortController().signal,
     });
+
+    clearTimeout(timeoutId);
 
     let newPhoto = await res.json();
     if (res.status !== 200) {
