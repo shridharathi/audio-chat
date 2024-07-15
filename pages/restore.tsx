@@ -22,6 +22,7 @@ import useSWR from 'swr';
 import { Rings } from 'react-loader-spinner';
 import DropDown from "../components/DropDown";
 
+
 const Home: NextPage = () => {
   const [originalPhoto, setOriginalPhoto] = useState<string | null>(null);
   const [restoredImage, setRestoredImage] = useState<string | null>(null);
@@ -37,15 +38,30 @@ const Home: NextPage = () => {
   const { data: session, status } = useSession();
 
 
-  const [showDropDown, setShowDropDown] = useState<boolean>(false);
-  const [selectCity, setSelectCity] = useState<string>("");
-  const cities = () => {
-    return ["Hong Kong", "London", "New York City", "Paris"];
+  const [showRaceDropDown, setShowRaceDropDown] = useState<boolean>(false);
+  const [showGenderDropDown, setShowGenderDropDown] = useState<boolean>(false);
+  const [selectRace, setSelectRace] = useState<string>("");
+  const [selectGender, setSelectGender] = useState<string>("");
+
+
+  const races = () => {
+    return ["White", "Black", "East Asian", "South Asian", "Hispanic", "Native", "Mixed", "Other"];
   };
 
-  const toggleDropDown = () => {
-    setShowDropDown(!showDropDown);
+  const genders = () => {
+    return ["Man", "Woman", "Other"];
   };
+
+  const toggleGenderDropDown = () => {
+    setShowGenderDropDown(!showGenderDropDown);
+  };
+
+  const toggleRaceDropDown = () => {
+    setShowRaceDropDown(!showRaceDropDown);
+  };
+
+
+  
 
     /**
    * Hide the drop down menu if click occurs
@@ -55,7 +71,8 @@ const Home: NextPage = () => {
    */
   const dismissHandler = (event: React.FocusEvent<HTMLButtonElement>): void => {
     if (event.currentTarget === event.target) {
-      setShowDropDown(false);
+      setShowGenderDropDown(false);
+      setShowRaceDropDown(false);
     }
   };
 
@@ -63,11 +80,18 @@ const Home: NextPage = () => {
    * Callback function to consume the
    * city name from the child component
    *
-   * @param city  The selected city
+   * @param race  The selected race
    */
-  const citySelection = (city: string): void => {
-    setSelectCity(city);
+  const raceSelection = (race: string): void => {
+    setSelectRace(race);
   };
+  
+/** 
+  * @param gender  The selected gender
+  */
+ const genderSelection = (gender: string): void => {
+   setSelectGender(gender);
+ };
   
   const options: UploadWidgetConfig = {
     apiKey: !!process.env.NEXT_PUBLIC_UPLOAD_API_KEY
@@ -203,6 +227,7 @@ const Home: NextPage = () => {
                 ariaLabel="rings-loading"
               />
             </div>
+            
           ) : status === 'authenticated' && !originalPhoto ? (
             <UploadDropZone />
           ) : (
@@ -239,23 +264,61 @@ const Home: NextPage = () => {
           )}
 
           {originalPhoto && !restoredImage && (
-             <button
-             className={showDropDown ? "active" : undefined}
-             onClick={(): void => toggleDropDown()}
-             onBlur={(e: React.FocusEvent<HTMLButtonElement>): void =>
-               dismissHandler(e)
-             }
-           >
-             <div>{selectCity ? "Select: " + selectCity : "Select ..."} </div>
-             {showDropDown && (
-               <DropDown
-                 cities={cities()}
-                 showDropDown={false}
-                 toggleDropDown={(): void => toggleDropDown()}
-                 citySelection={citySelection}
-               />
-             )}
-           </button>   
+          <div style={{ display: 'flex', gap: '10px', marginTop :'20px' }}>
+            <button
+              className={showRaceDropDown ? "active" : undefined}
+              onClick={toggleRaceDropDown}
+              onBlur={dismissHandler}
+              style={{  flex: 1, 
+                outline: '2px solid #000',
+                padding: '10px', 
+                backgroundColor: '#fff',
+                borderRadius: '4px' } }
+            >
+              <div>{selectRace ? selectRace : "Select Race"} </div>
+              {showRaceDropDown && (
+                <DropDown
+                  elems={races()}
+                  showDropDown={false}
+                  toggleDropDown={toggleRaceDropDown}
+                  elemSelection={raceSelection}
+                  style={{
+                    borderRadius: '4px',
+                    backgroundColor: '#d3d3d3',
+              
+                  }}
+                />
+              )}
+            </button>
+
+            <button
+              className={showGenderDropDown ? "active" : undefined}
+              onClick={toggleGenderDropDown}
+              onBlur={dismissHandler}
+              style={{ flex: 1, 
+                outline: '2px solid #000',
+                padding: '10px', 
+                backgroundColor: '#fff',
+                borderRadius: '4px',
+          
+              }}
+            >
+              <div>{selectGender ? selectGender : "Select Gender"} </div>
+              {showGenderDropDown && (
+                <DropDown
+                  elems={genders()}
+                  showDropDown={false}
+                  toggleDropDown={toggleGenderDropDown}
+                  elemSelection={genderSelection}
+                  style={{
+                    borderRadius: '4px',
+                    backgroundColor: '#d3d3d3',
+       
+                  }}
+                />
+              )}
+            </button>
+          </div>
           )}
 
 
@@ -276,10 +339,11 @@ const Home: NextPage = () => {
         
     
 
-        {originalPhoto && prompt && (
+        {originalPhoto && prompt && selectGender && selectRace && (
+          
           <button 
             onClick={() => {
-              generatePhoto(originalPhoto, prompt);
+              generatePhoto(originalPhoto, `${selectRace} ${selectGender}\, ${prompt} style`);
             }}
             className="bg-black rounded-full text-white font-medium px-4 py-2 mt-4 hover:bg-black/80 transition">
             Go!
