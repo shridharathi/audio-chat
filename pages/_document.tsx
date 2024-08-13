@@ -8,19 +8,19 @@ class MyDocument extends Document {
           <link rel="icon" href="/favicon.ico" />
           <meta
             name="description"
-            content="Create AI Filters"
+            content="Chat with Audio Files"
           />
-          <meta property="og:site_name" content="room-genius-xi.vercel.app" />
+          <meta property="og:site_name" content="tryaudiochat.com" />
           <meta
             property="og:description"
-            content="Create AI Filters"
+            content="Chat with Audio Files"
           />
-          <meta property="og:title" content="FilterAI" />
+          <meta property="og:title" content="audio chat" />
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content="FilterAI" />
+          <meta name="twitter:title" content="audio chat" />
           <meta
             name="twitter:description"
-            content="Create AI Filters"
+            content="Chat with Audio Files"
           />
         </Head>
         <body>
