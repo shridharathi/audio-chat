@@ -4,6 +4,7 @@ import { createClient } from '@deepgram/sdk';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from './auth/[...nextauth]';
 import prisma from '../../lib/prismadb';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 export const config = {
   api: {
@@ -11,7 +12,7 @@ export const config = {
   },
 };
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const form = new IncomingForm();
 
   form.parse(req, async (err, fields, files) => {
