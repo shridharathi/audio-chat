@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Access the uploaded file
-    const file = files.file[0]; // Adjust according to the structure of `files`
+    const file = (files.file as any)?.[0] ?? null; // Adjust according to the structure of `files`
     if (!file || !file.filepath) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
