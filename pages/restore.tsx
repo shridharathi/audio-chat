@@ -1,433 +1,319 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
-import Image from 'next/image';
-import { ChangeEvent, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSession, signIn } from 'next-auth/react';
+import useSWR from 'swr';
+import { useDropzone } from 'react-dropzone';
+import LoadingDots from '../components/LoadingDots';
+import Footer from '../components/Footer';
+import Header from '../components/Header';
+import Toggle from '../components/Toggle';
+import { Rings } from 'react-loader-spinner';
+import React from 'react';
+import { ChatGpt } from '../components/ChatGpt';
 import { UrlBuilder } from '@bytescale/sdk';
 import {
   UploadWidgetConfig,
   UploadWidgetOnPreUploadResult,
 } from '@bytescale/upload-widget';
 import { UploadDropzone } from '@bytescale/upload-widget-react';
-import { CompareSlider } from '../components/CompareSlider';
-import Footer from '../components/Footer';
-import Header from '../components/Header';
-import LoadingDots from '../components/LoadingDots';
-import Toggle from '../components/Toggle';
-import appendNewToName from '../utils/appendNewToName';
-import downloadPhoto from '../utils/downloadPhoto';
 import NSFWFilter from 'nsfw-filter';
-import va from '@vercel/analytics';
-import { useSession, signIn } from 'next-auth/react';
-import useSWR from 'swr';
-import { Rings } from 'react-loader-spinner';
-import DropDown from "../components/DropDown";
+import axios from 'axios';
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const Home: NextPage = () => {
-  const [originalPhoto, setOriginalPhoto] = useState<string | null>(null);
-  const [restoredImage, setRestoredImage] = useState<string | null>(null);
-  const [prompt, setPrompt] = useState<string>("");
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [audioName, setAudioName] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [restoredLoaded, setRestoredLoaded] = useState<boolean>(false);
-  const [sideBySide, setSideBySide] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [photoName, setPhotoName] = useState<string | null>(null);
+  const [transcript, setTranscript] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [fileURL, setFileURL] = useState<string | null>(null);
+  const [noCredits, setNoCredits] = useState<boolean>(false);
 
-  const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const { data, mutate } = useSWR('/api/remaining', fetcher);
   const { data: session, status } = useSession();
 
 
-  const [showRaceDropDown, setShowRaceDropDown] = useState<boolean>(false);
-  const [showGenderDropDown, setShowGenderDropDown] = useState<boolean>(false);
-  const [selectRace, setSelectRace] = useState<string>("");
-  const [selectGender, setSelectGender] = useState<string>("");
 
+  const Transcript = ({ transcript }) => {
 
-  const races = () => {
-    return ["White", "Black", "East Asian", "South Asian", "Hispanic", "Native", "Mixed", "Other"];
+    const renderTextWithNewlines = (text) => {
+      return text.split('\n').map((line, index) => (
+        <React.Fragment key={index}>
+          {line}
+          <br />
+        </React.Fragment>
+      ));
+    };
+
+    return (
+      transcript && (
+        <div className="mt-6 text-left bg-gray-100 p-4 rounded-lg max-h-[58vh] overflow-y-auto">
+          <h3 className="text-xl font-bold mb-4">Transcript: </h3>
+          <p>{renderTextWithNewlines(transcript)}</p>
+        </div>
+      )
+    );
   };
 
-  const genders = () => {
-    return ["Man", "Woman", "Other"];
-  };
 
-  const toggleGenderDropDown = () => {
-    setShowGenderDropDown(!showGenderDropDown);
-  };
-
-  const toggleRaceDropDown = () => {
-    setShowRaceDropDown(!showRaceDropDown);
-  };
-
-
-  
-
-    /**
-   * Hide the drop down menu if click occurs
-   * outside of the drop-down element.
-   *
-   * @param event  The mouse event
-   */
-  const dismissHandler = (event: React.FocusEvent<HTMLButtonElement>): void => {
-    if (event.currentTarget === event.target) {
-      setShowGenderDropDown(false);
-      setShowRaceDropDown(false);
-    }
-  };
-
-  /**
-   * Callback function to consume the
-   * city name from the child component
-   *
-   * @param race  The selected race
-   */
-  const raceSelection = (race: string): void => {
-    setSelectRace(race);
-  };
-  
-/** 
-  * @param gender  The selected gender
-  */
- const genderSelection = (gender: string): void => {
-   setSelectGender(gender);
- };
-  
-  const options: UploadWidgetConfig = {
-    apiKey: !!process.env.NEXT_PUBLIC_UPLOAD_API_KEY
-      ? process.env.NEXT_PUBLIC_UPLOAD_API_KEY
-      : 'free',
-    maxFileCount: 1,
-    mimeTypes: ['image/jpeg', 'image/png', 'image/jpg'],
-    editor: { images: { crop: false } },
-    styles: { colors: { primary: '#000' } },
-    onPreUpload: async (
-      file: File
-    ): Promise<UploadWidgetOnPreUploadResult | undefined> => {
-      let isSafe = false;
-      try {
-        isSafe = await NSFWFilter.isSafe(file);
-        console.log({ isSafe });
-        if (!isSafe) va.track('NSFW Image blocked');
-      } catch (error) {
-        console.error('NSFW predictor threw an error', error);
-      }
-      if (!isSafe) {
-        return { errorMessage: 'Detected a NSFW image which is not allowed.' };
-      }
-      if (data.remainingGenerations <= 0) {
-        return { errorMessage: 'You have no remaining credits.' };
-      }
-      return undefined;
-    },
-  };
-
-  const handlePrompt = (event: ChangeEvent<HTMLInputElement>) => {
-    setPrompt(event.target.value); // Update state with the current value
-  };
-
-  const UploadDropZone = () => (
-    <UploadDropzone
-      options={options}
-      onUpdate={({ uploadedFiles }) => {
-        if (uploadedFiles.length !== 0) {
-          const image = uploadedFiles[0];
-          const imageName = image.originalFile.originalFileName;
-          const imageUrl = UrlBuilder.url({
-            accountId: image.accountId,
-            filePath: image.filePath,
-            options: {
-              transformation: 'preset',
-              transformationPreset: 'thumbnail',
-            },
-          });
-          setPhotoName(imageName);
-          setOriginalPhoto(imageUrl);
-          //generatePhoto(imageUrl);
+  const DropzoneComponent: React.FC<{ setFile: (file: File | null) => void; setFileURL: (url: string | null) => void; }> = ({ setFile, setFileURL }) => {
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+      accept: 'audio/*',
+      multiple: false,
+      onDrop: (acceptedFiles: File[]) => {
+        if (acceptedFiles.length > 0) {
+          const file = acceptedFiles[0];
+          setFile(file);
+          setFileURL(URL.createObjectURL(file));
+          setAudioName(file.name);
         }
-      }}
-      width="670px"
-      height="250px"
-    />
-  );
-
-  async function generatePhoto(fileUrl: string, prompt: string) {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setLoading(true);
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000);
-
-    const res = await fetch('/api/generate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ imageUrl: fileUrl, prompt: prompt }),
-      signal: new AbortController().signal,
+      }
     });
 
-    clearTimeout(timeoutId);
+    return (
+      <div className="p-4">
+        {!file ? (
+          <div
+            {...getRootProps({ className: 'dropzone' })}
+            style={{
+              ...dropzoneStyle,
+              backgroundColor: isDragActive ? '#e0e0e0' : '#f0f0f0', // Darker color when dragging
+              borderColor: isDragActive ? '#333' : '#000', // Darker border color when dragging
+            }}
+          >
+            <input {...getInputProps()} />
+            <p>Upload audio file here</p>
+          </div>
+        ) : (
+          <div>
+            {!loading ? (
+            <div className="flex items-start space-x-4">
+              <div className="flex-1">
+                <p className="mb-2 font-medium">{file.name}</p>
+                <div className="w-full">
+                  <audio controls className="w-80">
+                    <source src={fileURL || ''} type={file.type} />
+                    Your browser does not support the audio element.
+                  </audio>
+                </div>
+              </div>
+              <div className="flex-1">
+              <button
+                onClick={() => {
+                  setFile(null);
+                  setFileURL(null);
+                  setTranscript(null);
+                  setError(null);
+                }}
+                className="bg-dark-olive-green rounded-full text-white font-medium px-4 py-2 mt-9 hover:bg-dark-olive-green-dark transition"
+              >
+                Try Again
+              </button>
+              </div>
+            </div>
+            
+            ) : (
+              <div>
+                <p className="mb-2 font-medium">{file.name}</p>
+                <audio controls>
+                  <source src={fileURL || ''} type={file.type} />
+                  Your browser does not support the audio element.
+                </audio>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
 
-    let newPhoto = await res.json();
-    if (res.status !== 200) {
-      setError("Failed to process image.");
-    } else {
-      mutate();
-      setRestoredImage(newPhoto[0]);
+  const dropzoneStyle: React.CSSProperties = {
+    border: '2px dashed #000000',
+    borderRadius: '10px',
+    padding: '100px',
+    textAlign: 'center',
+    cursor: 'pointer',
+    backgroundColor: '#f0f0f0',
+    marginTop: '1rem',
+  };
+
+  async function generateTranscript(file: File) {
+
+    if (data?.remainingGenerations <= 0) {
+      setNoCredits(true);
+      return;
     }
-    setLoading(false);
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Create FormData instance and append the file
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Make the POST request to the server
+      const response = await axios.post('/api/generate', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Check for HTTP errors
+      if (response.status !== 200) {
+        throw new Error(`Failed to process audio: ${response.statusText}`);
+      }
+
+      // Extract and set the transcript from the response
+      const result = response.data; // Adjust this based on your API response
+      setTranscript(result.results.channels[0].alternatives[0].paragraphs.transcript);
+
+      // Optionally, revalidate or refresh any related data
+      mutate();
+    } catch (error) {
+      // Handle errors appropriately
+      setError(error.message || 'An unexpected error occurred.');
+    } finally {
+      // Reset loading state regardless of success or failure
+      setLoading(false);
+    }
   }
+  useEffect(() => {
+    if (file) {
+      generateTranscript(file);
+    }
+  }, [file]);
 
   return (
     <div className="flex max-w-6xl mx-auto flex-col items-center justify-center py-2 min-h-screen">
       <Head>
-        <title>Filter AI</title>
+        <title>Audio Chat</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <Header photo={session?.user?.image || undefined} gens={data?.remainingGenerations ? Number(data.remainingGenerations) : 0} />
-      <main className="flex flex-1 w-full flex-col items-center justify-center text-center px-4 mt-4 sm:mb-0 mb-8">
+      <main className="flex flex-1 w-full flex-col items-center justify-center text-center px-4 sm:mb-0 mb-8">
+        {!file  &&
+          (<p className=" mb-1" style={{ fontSize: '2.5rem' }}> 
+            <strong> Chat with your audio files </strong>
+          </p>)
+        }
+        {status === 'unauthenticated' && !file && (
+            <div className="flex max-w-6xl mx-auto flex-col items-center justify-center py-2 min-h-screen">
+            <Head>
+              <title>audio chat</title>
+            </Head>
+
+            <main className="flex flex-1 w-full flex-col items-center justify-center text-center px-4 mt-20">
+              <h1 className="mx-auto max-w-3xl font-display text-5xl font-bold tracking-normal text-slate-900 sm:text-5xl color-dark-olive-green">
+                chat with your audio files
+              </h1>
       
-        <h1 className="mx-auto max-w-4xl font-display text-2xl font-bold tracking-normal text-slate-900 sm:text-4xl mb-2">
-          Transform Your Look
-        </h1>
-        {status === 'authenticated' && data && (
+              <p className="mx-auto mt-5 max-w-xl text-lg text-slate-700 leading-7">
+                Lectures, meetings, interviews — who has time to relisten?
+              </p>
+              <div className="flex justify-center space-x-4">
+                 <button
+                    onClick={() => signIn('google')}
+                    className="bg-gray-200 text-black font-semibold py-3 px-6 rounded-2xl flex items-center space-x-2 mt-10 shadow-md hover:bg-gray-300">
+                       <img
+                        src="google.png" // Path to your image file or URL
+                        alt="Google Icon" // Alt text for accessibility
+                        className="w-6 h-6" // Adjust size as needed
+                      />
+                    <span>Sign in with Google </span>
+                  </button>
+              </div>
+             
+              <div className="flex justify-center items-center mt-12">
+             
+            </div>
+            </main>
+     
+          </div>
+        )
+        }
+
+        {status === 'authenticated' && data && !file && (
           <p className="text-slate-500">
             You have{' '}
             <span className="font-semibold">
               {data?.remainingGenerations}{" "}
-              {data?.remainingGenerations > 1 ? "credits" : "credit"}
+              {data?.remainingGenerations != 1 ? "credits" : "credit"}
             </span>{' '}
-            left. 
+            left.
           </p>
         )}
-        <div className="flex justify-between items-center w-full flex-col mt-4">
-          <Toggle
-            className={`${restoredLoaded ? 'visible mb-6' : 'invisible'}`}
-            sideBySide={sideBySide}
-            setSideBySide={(newVal) => setSideBySide(newVal)}
-          />
-          {restoredLoaded && sideBySide && (
-            <CompareSlider
-              original={originalPhoto!}
-              restored={restoredImage!}
-            />
-          )}
-          {status === 'loading' ? (
-            <div className="max-w-[670px] h-[250px] flex justify-center items-center">
-              <Rings
-                height="100"
-                width="100"
-                color="black"
-                radius="6"
-                wrapperStyle={{}}
-                wrapperClass=""
-                visible={true}
-                ariaLabel="rings-loading"
-              />
-            </div>
-            
-          ) : status === 'authenticated' && !originalPhoto ? (
-            <UploadDropZone />
-          ) : (
-            status === 'unauthenticated' && !originalPhoto && (
-              <div className="h-[250px] flex flex-col items-center space-y-6 max-w-[670px] -mt-8">
-                <div className="max-w-xl text-gray-600">
-                  Sign in below with Google to create a free account and start designing your dream room!
-                </div>
-                <button
-                  onClick={() => signIn('google')}
-                  className="bg-gray-200 text-black font-semibold py-3 px-6 rounded-2xl flex items-center space-x-2"
-                >
-                  <Image
-                    src="/google.png"
-                    width={20}
-                    height={20}
-                    alt="google's logo"
-                  />
-                  <span>Sign in with Google</span>
-                </button>
-              </div>
-            )
-          )}
-          {originalPhoto && !restoredImage && (
-              <Image
-                alt="original photo"
-                src={originalPhoto}
-                className="rounded-2xl"
-                width={400}
-                height={400}
-              />
 
-              
-          )}
-
-          {originalPhoto && !restoredImage && (
-          <div style={{ display: 'flex', gap: '10px', marginTop :'20px' }}>
-            <button
-              className={showRaceDropDown ? "active" : undefined}
-              onClick={toggleRaceDropDown}
-              onBlur={dismissHandler}
-              style={{  flex: 1, 
-                outline: '2px solid #000',
-                padding: '10px', 
-                backgroundColor: '#fff',
-                borderRadius: '4px' } }
-            >
-              <div>{selectRace ? selectRace : "Select Race"} </div>
-              {showRaceDropDown && (
-                <DropDown
-                  elems={races()}
-                  showDropDown={false}
-                  toggleDropDown={toggleRaceDropDown}
-                  elemSelection={raceSelection}
-                  style={{
-                    borderRadius: '4px',
-                    backgroundColor: '#d3d3d3',
-              
-                  }}
-                />
-              )}
-            </button>
-
-            <button
-              className={showGenderDropDown ? "active" : undefined}
-              onClick={toggleGenderDropDown}
-              onBlur={dismissHandler}
-              style={{ flex: 1, 
-                outline: '2px solid #000',
-                padding: '10px', 
-                backgroundColor: '#fff',
-                borderRadius: '4px',
-          
-              }}
-            >
-              <div>{selectGender ? selectGender : "Select Gender"} </div>
-              {showGenderDropDown && (
-                <DropDown
-                  elems={genders()}
-                  showDropDown={false}
-                  toggleDropDown={toggleGenderDropDown}
-                  elemSelection={genderSelection}
-                  style={{
-                    borderRadius: '4px',
-                    backgroundColor: '#d3d3d3',
-       
-                  }}
-                />
-              )}
-            </button>
+        {status === 'authenticated' && (
+          <div className='mt-1'>
+            <DropzoneComponent setFile={setFile} setFileURL={setFileURL} />
           </div>
-          )}
-
-
-
-          {status === 'authenticated' && (
-          <div>
-          <label htmlFor="textInput"></label>
-            <input
-              type="text"
-              id="textInput"
-              value={prompt} // Controlled input
-              onChange={handlePrompt} // Update state on change
-              placeholder=" Describe your redesign..."
-              style={{ width: '350px', height: '40px', fontSize: '16px', border: '1px solid #ccc', marginTop: '15px', padding: '10px'}}
-           />
-          </div>
-          )}
-        
-    
-
-        {originalPhoto && prompt && selectGender && selectRace && (
-          
-          <button 
-            onClick={() => {
-              generatePhoto(originalPhoto, `${selectRace} ${selectGender}\, ${prompt} style`);
-            }}
-            className="bg-black rounded-full text-white font-medium px-4 py-2 mt-4 hover:bg-black/80 transition">
-            Go!
-          </button>
         )}
 
-          {restoredImage && originalPhoto && !sideBySide && (
-            <div className="flex sm:space-x-4 sm:flex-row flex-col">
-              <div>
-                <h2 className="mb-1 font-medium text-lg">Original Photo</h2>
-                <Image
-                  alt="original photo"
-                  src={originalPhoto}
-                  className="rounded-2xl relative"
-                  width={475}
-                  height={475}
-                />
-              </div>
-              <div className="sm:mt-0 mt-8">
-                <h2 className="mb-1 font-medium text-lg">Restored Photo</h2>
-                <a href={restoredImage} target="_blank" rel="noreferrer">
-                  <Image
-                    alt="restored photo"
-                    src={restoredImage}
-                    className="rounded-2xl relative sm:mt-0 mt-2 cursor-zoom-in"
-                    width={475}
-                    height={475}
-                    onLoadingComplete={() => setRestoredLoaded(true)}
-                  />
-                </a>
-              </div>
-            </div>
-          )}
-          {loading && (
-            <button
-              disabled
-              className="bg-black rounded-full text-white font-medium px-4 pt-2 pb-3 mt-8 hover:bg-black/80 w-40"
-            >
-              <span className="pt-4">
-                <LoadingDots color="white" style="large" />
-              </span>
-            </button>
-          )}
-          {error && (
-            <div
-              className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mt-8 max-w-[575px]"
-              role="alert"
-            >
-              <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
-                <a href="/buy-credits">You need more credits! Buy more here.</a>
-              </div>
-              <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
-                <a href="/buy-credits">Buy Credits</a>
-              </div>
-            </div>
-          )}
-          <div className="flex space-x-2 justify-center">
-            {originalPhoto && !loading && (
-              <button
-                onClick={() => {
-                  setOriginalPhoto(null);
-                  setRestoredImage(null);
-                  setRestoredLoaded(false);
-                  setError(null);
-                }}
-                className="bg-white rounded-full text-black border font-medium px-4 py-2 mt-6 hover:bg-gray-100 transition"
-              >
-                Upload New Photo
-              </button>
-            )}
-            {restoredLoaded && (
-              <button
-                onClick={() => {
-                  downloadPhoto(restoredImage!, appendNewToName(photoName!));
-                }}
-                className="bg-white rounded-full text-black border font-medium px-4 py-2 mt-6 hover:bg-gray-100 transition"
-              >
-                Download Restored Photo
-              </button>
-            )}
+        {loading && (
+
+          <div className="max-w-[670px] h-[250px] mt-14">
+            <p> Transcribing...</p>
+            <Rings
+              height="100"
+              width="100"
+              color="black"
+              radius="6"
+              wrapperStyle={{}}
+              wrapperClass=""
+              visible={true}
+              ariaLabel="rings-loading"
+            />
           </div>
-        </div>
+        )}
+
+        {transcript && transcript !== '\n' && (
+          <div className="flex justify-between space-x-4">
+            <div className="flex-1">
+              <Transcript transcript={transcript} />
+            </div>
+            <div className="flex-1">
+              <ChatGpt transcript={transcript} />
+            </div>
+          </div>
+        )}
+
+        {transcript && transcript === '\n' && (
+          <div className="flex justify-between space-x-4 mt-5">
+            <p>No transcript available 🙃 Try again!</p>
+          </div>
+        )}
+
+        {noCredits && (
+          <div
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mt-8 max-w-[575px]"
+            role="alert"
+          >
+            <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
+              <a href="/buy-credits">You ran out credits! Get some more ;)</a>
+            </div>
+            <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
+              <a href="/buy-credits">Buy Credits</a>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mt-8 max-w-[575px]"
+            role="alert"
+          >
+            <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
+              <a href="/buy-credits">Uh oh! There was an error 🙃</a>
+            </div>
+          </div>
+        )}
+
       </main>
-      <Footer />
     </div>
   );
 };

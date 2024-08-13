@@ -14,7 +14,7 @@ export default function Pricing() {
   return (
     <div className="flex mx-auto max-w-7xl overflow-visible flex-col items-center justify-center py-2 min-h-screen">
       <Head>
-        <title>Buy FilterAI Credits</title>
+        <title>buy audio chat credits</title>
       </Head>
       <Script src="https://js.stripe.com/v3/pricing-table.js" />
       <Script src="https://cdn.paritydeals.com/banner.js" />
@@ -26,7 +26,7 @@ export default function Pricing() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
             <p className="mt-2 text-4xl font-bold tracking-tight text-black sm:text-5xl">
-              Buy Filter AI Credits
+            Buy audio chat Credits
             </p>
           </div>
         </div>
@@ -44,8 +44,8 @@ export default function Pricing() {
           // @ts-ignore
           //trigger
           <stripe-pricing-table
-            pricing-table-id="prctbl_1PYEELHRTS6q6Af4ngWuZfop"
-            publishable-key="pk_live_51PXTdoHRTS6q6Af4ffyb2jMQO7gVyRnmbzmrHPEUnyzMj1loKnrNwLvbXGEogh4lSr8o35FOyLyoxAX4X9Y2T90Q009sdbuBzV"
+            pricing-table-id="prctbl_1Pmq9KJIkqJ1xhwkCPD7Bcqt"
+            publishable-key="pk_test_51Pmpk0JIkqJ1xhwk1lrPqLNSpSpvBSqr6wNfn2Z7RNoL0tev6KuSsdZxUN7xOeHQd5OZSOJmnpzUhUXNPTI1JvlM00EJxuXzvz"
             client-reference-id={session.user.email}
             customer-email={session.user.email}
           />

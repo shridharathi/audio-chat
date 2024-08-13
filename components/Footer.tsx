@@ -6,11 +6,11 @@ export default function Footer() {
       <div>
         Powered by{' '}
         <a
-          href="https://replicate.com/"
+          href="https://deepgram.com/"
           target="_blank"
           className="font-bold transition hover:text-black/50"
         >
-          Replicate{' '}
+          Deepgram{' '}
         </a>
       </div>
     </footer>

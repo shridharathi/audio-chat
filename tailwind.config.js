@@ -6,7 +6,11 @@ module.exports = {
     './app/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: { colors: {
+      'dark-olive-green': '#3c4731',
+      'dark-olive-green-dark': '#17240c', // Slightly darker shade for hover effect
+      },
+    },
   },
   plugins: [],
 }
