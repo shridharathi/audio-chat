@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { OpenAI, ChatCompletionMessageParam } from 'openai';
+import OpenAI from 'openai';
+type TextAlign = 'left' | 'right' | 'center';
 
 interface ChatGptProps {
   transcript: string;
@@ -27,18 +28,18 @@ export const ChatGpt: React.FC<ChatGptProps> = ({ transcript }) => {
   const chatHistoryEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const chunkSize = 1500; // Adjust this size according to token limits
-    const transcriptChunks = chunkTranscript(transcript, chunkSize);
 
     const initialMessage = [
-      { role: 'system', content: 'You are an assistant who will help the user answer any questions regarding the attached transcript.' },
+      { role: "system", content: "You are an assistant who will help the user answer any questions regarding the attached transcript." },
     ];
 
     const assistantMessage = [
-      { role: 'assistant', content: 'Ask away!' }
+      { role: "assistant", content: "Ask away!" }
     ];
 
-    const transcriptMessages = transcriptChunks.map(chunk => ({ role: 'user', content: chunk }));
+    const chunkSize = 1500; // Adjust this size according to token limits
+    const transcriptChunks = chunkTranscript(transcript, chunkSize);
+    const transcriptMessages = transcriptChunks.map(chunk => ({ role: "user", content: chunk }));
 
     setChatHistory([...initialMessage, ...transcriptMessages, ...assistantMessage]);
   }, [transcript]);
@@ -56,16 +57,13 @@ export const ChatGpt: React.FC<ChatGptProps> = ({ transcript }) => {
     setIsLoading(true);
     setError(null);
 
-    const newChatHistory = [...chatHistory, { role: 'user', content: prompt }];
+    const newChatHistory = [...chatHistory, {role: 'user', content: prompt }];
     setChatHistory(newChatHistory);
-
+  
     try {
       const completion = await openai.chat.completions.create({
         model: 'gpt-3.5-turbo',
-        messages: newChatHistory.map((message) => ({
-          role: message.role,
-          content: message.content,
-        })),
+        messages: [{role: 'user', content: 'prompt' }],
       });
       const responseMessage = completion.choices[0].message.content || '';
       setChatHistory([...newChatHistory, { role: 'assistant', content: responseMessage }]);
@@ -157,12 +155,12 @@ const styles = {
     cursor: 'pointer'
   },
   chatLoading: {
-    textAlign: 'center',
+    textAlign: 'center' as TextAlign,
     marginTop: '1rem'
   },
   chatError: {
     color: 'red',
-    textAlign: 'center',
+    textAlign: 'center' as TextAlign,
     marginTop: '1rem'
   },
   chatHistory: {
@@ -170,15 +168,15 @@ const styles = {
     padding: '1rem',
     backgroundColor: '#fff',
     maxHeight: '400px',
-    overflowY: 'auto',
+    overflowY: 'auto' as const,
     marginBottom: '1rem'
   },
   userMessage: {
     marginBottom: '1rem',
-    textAlign: 'right'
+    textAlign: 'right' as TextAlign // Use the TextAlign type annotation
   },
   assistantMessage: {
     marginBottom: '1rem',
-    textAlign: 'left'
+    textAlign: 'left' as TextAlign // Use the TextAlign type annotation
   }
 };
