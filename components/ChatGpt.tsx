@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import OpenAI from 'openai';
+import { OpenAI, ChatCompletionMessageParam } from 'openai';
 
 interface ChatGptProps {
   transcript: string;
@@ -47,7 +47,8 @@ export const ChatGpt: React.FC<ChatGptProps> = ({ transcript }) => {
 
   
   const openai = new OpenAI({
-    apiKey: process.env['OPENAI_API_KEY'],
+    apiKey : 'My API Key',
+    dangerouslyAllowBrowser: true,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,7 +62,10 @@ export const ChatGpt: React.FC<ChatGptProps> = ({ transcript }) => {
     try {
       const completion = await openai.chat.completions.create({
         model: 'gpt-3.5-turbo',
-        messages: newChatHistory,
+        messages: newChatHistory.map((message) => ({
+          role: message.role,
+          content: message.content,
+        })),
       });
       const responseMessage = completion.choices[0].message.content || '';
       setChatHistory([...newChatHistory, { role: 'assistant', content: responseMessage }]);
