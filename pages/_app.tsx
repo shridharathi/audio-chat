@@ -4,6 +4,9 @@ import { SessionProvider } from 'next-auth/react';
 import '../styles/globals.css';
 import PlausibleProvider from 'next-plausible';
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (
     <SessionProvider session={session}>

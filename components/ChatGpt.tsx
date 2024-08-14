@@ -5,20 +5,49 @@ interface ChatGptProps {
   transcript: string;
 }
 
+const chunkTranscript = (transcript: string, chunkSize: number): string[] => {
+  const chunks: string[] = [];
+  let currentIndex = 0;
+
+  while (currentIndex < transcript.length) {
+    const chunk = transcript.slice(currentIndex, currentIndex + chunkSize);
+    chunks.push(chunk);
+    currentIndex += chunkSize;
+  }
+
+  return chunks;
+};
+
 export const ChatGpt: React.FC<ChatGptProps> = ({ transcript }) => {
   const [prompt, setPrompt] = useState<string>('');
-  const [chatHistory, setChatHistory] = useState<Array<{ role: string, content: string }>>([
-    { role: 'system', content: `You are an assistant who will help the user answer any questions regarding the attached transcript: ${transcript}` },
-    { role: 'assistant', content: 'Ask away!' }
-  ]);
+  const [chatHistory, setChatHistory] = useState<Array<{ role: string, content: string }>>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const chatHistoryEndRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const chunkSize = 1500; // Adjust this size according to token limits
+    const transcriptChunks = chunkTranscript(transcript, chunkSize);
+
+    const initialMessage = [
+      { role: 'system', content: 'You are an assistant who will help the user answer any questions regarding the attached transcript.' },
+    ];
+
+    const assistantMessage = [
+      { role: 'assistant', content: 'Ask away!' }
+    ];
+
+    const transcriptMessages = transcriptChunks.map(chunk => ({ role: 'user', content: chunk }));
+
+    setChatHistory([...initialMessage, ...transcriptMessages, ...assistantMessage]);
+  }, [transcript]);
+
+  const lastIndexRef = useRef<number | null>(null);
+
+  
   const openai = new OpenAI({
-    apiKey: "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",
-    dangerouslyAllowBrowser: true // Only use this if you're calling the API from the browser
+    apiKey: process.env['OPENAI_API_KEY'],
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,6 +75,16 @@ export const ChatGpt: React.FC<ChatGptProps> = ({ transcript }) => {
   };
 
   useEffect(() => {
+    // This will run only on the initial render
+
+      lastIndexRef.current = chatHistory.findIndex(
+        (message) => message.role === 'assistant' && message.content === 'Ask away!'
+      );
+ 
+  }, [chatHistory]); // Update dependency to chatHistory to find index after it is set
+
+
+  useEffect(() => {
     // Scroll to the end of the chat history when it updates
     if (chatHistoryEndRef.current) {
       chatHistoryEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -56,7 +95,7 @@ export const ChatGpt: React.FC<ChatGptProps> = ({ transcript }) => {
     <div style={styles.chatContainer}>
       {error && <div style={styles.chatError}>{error}</div>}
       <div style={styles.chatHistory}>
-        {chatHistory.slice(1).map((message, index) => (
+        {lastIndexRef.current !== null && chatHistory.slice(lastIndexRef.current).map((message, index) => (
           <div key={index} style={message.role === 'user' ? styles.userMessage : styles.assistantMessage}>
             <strong>{message.role === 'user' ? 'You' : 'Assistant'}:</strong> {message.content}
           </div>
@@ -87,6 +126,7 @@ export const ChatGpt: React.FC<ChatGptProps> = ({ transcript }) => {
 const styles = {
   chatContainer: {
     maxWidth: '600px',
+    maxHeight: '400px',
     marginTop: '1rem',
     margin: '0 auto',
     padding: '2rem',
@@ -125,7 +165,7 @@ const styles = {
     marginTop: '1rem',
     padding: '1rem',
     backgroundColor: '#fff',
-    maxHeight: '500px',
+    maxHeight: '400px',
     overflowY: 'auto',
     marginBottom: '1rem'
   },
