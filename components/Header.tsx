@@ -16,7 +16,7 @@ export default function Header({ photo, gens }: HeaderProps) {
             src={'icon.png'}
             className="w-10 rounded-full"
             width={32}
-            height={28}
+            height={28} //
           />
         
         <h1 className="sm:text-2xl text-xl font-bold ml-2 tracking-tight">
