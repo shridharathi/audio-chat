@@ -49,20 +49,20 @@ const Home: NextPage = () => {
         </React.Fragment>
       ));
     };
-    return (
-      transcript && (
-        <div className="mt-6 text-left bg-gray-100 p-4 rounded-lg max-h-[58vh] overflow-y-auto">
-          <h3 className="text-xl font-bold mb-4">Transcript: </h3>
-          <p>{renderTextWithNewlines(transcript)}</p>
-        </div>
-      )
-    );
+    return transcript ? (
+      <div className="mt-6 text-left bg-gray-100 p-4 rounded-lg max-h-[58vh] overflow-y-auto">
+        <h3 className="text-xl font-bold mb-4">Transcript: </h3>
+        <p>{renderTextWithNewlines(transcript)}</p>
+      </div>
+    ) : null; // or any other default value you want to return  
   };
 
 
   const DropzoneComponent: React.FC<{ setFile: (file: File | null) => void; setFileURL: (url: string | null) => void; }> = ({ setFile, setFileURL }) => {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
-      accept: 'audio/*',
+      accept: {
+        'audio/*': ['.mp3', '.wav', '.ogg'],
+      },
       multiple: false,
       onDrop: (acceptedFiles: File[]) => {
         if (acceptedFiles.length > 0) {
