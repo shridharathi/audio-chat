@@ -36,10 +36,12 @@ const Home: NextPage = () => {
   const { data: session, status } = useSession();
 
 
+  interface TranscriptProps {
+    transcript?: string; // Adjust type if `transcript` can be `null` or `undefined`
+  }
+  const Transcript: React.FC<TranscriptProps> = ({ transcript }) => {
 
-  const Transcript = ({ transcript }) => {
-
-    const renderTextWithNewlines = (text) => {
+    const renderTextWithNewlines = (text: string): JSX.Element[] => {
       return text.split('\n').map((line, index) => (
         <React.Fragment key={index}>
           {line}
@@ -47,7 +49,6 @@ const Home: NextPage = () => {
         </React.Fragment>
       ));
     };
-
     return (
       transcript && (
         <div className="mt-6 text-left bg-gray-100 p-4 rounded-lg max-h-[58vh] overflow-y-auto">
