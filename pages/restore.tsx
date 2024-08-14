@@ -176,7 +176,7 @@ const Home: NextPage = () => {
       mutate();
     } catch (error) {
       // Handle errors appropriately
-      setError(error.message || 'An unexpected error occurred.');
+      setError('An unexpected error occurred.');
     } finally {
       // Reset loading state regardless of success or failure
       setLoading(false);
