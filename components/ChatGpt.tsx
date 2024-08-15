@@ -48,7 +48,7 @@ export const ChatGpt: React.FC<ChatGptProps> = ({ transcript }) => {
 
   
   const openai = new OpenAI({
-    apiKey : 'My API Key',
+    apiKey: 'My API Key',
     dangerouslyAllowBrowser: true,
   });
 
