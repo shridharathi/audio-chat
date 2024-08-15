@@ -87,7 +87,7 @@ export const ChatGpt: React.FC<ChatGptProps> = ({ transcript }) => {
 
 
   useEffect(() => {
-    // Scroll to the end of the chat history when it updates
+    // Scroll to the end of the chat history when it updates ..
     if (chatHistoryEndRef.current) {
       chatHistoryEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
