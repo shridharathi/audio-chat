@@ -44,12 +44,11 @@ export const ChatGpt: React.FC<ChatGptProps> = ({ transcript }) => {
     setChatHistory([...initialMessage, ...transcriptMessages, ...assistantMessage]);
   }, [transcript]);
 
-  const lastIndexRef = useRef<number | null>(null);
+  const lastIndexRef = useRef<number | null>(null); //
 
   
   const openai = new OpenAI({
-    apiKey: 'My API Key',
-    dangerouslyAllowBrowser: true,
+    apiKey: process.env.OPENAI_API_KEY,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
