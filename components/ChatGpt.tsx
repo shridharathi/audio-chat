@@ -58,7 +58,7 @@ export const ChatGpt: React.FC<ChatGptProps> = ({ transcript }) => {
     setError(null);
 
     const newChatHistory = [...chatHistory, {role: 'user', content: prompt }];
-    setChatHistory(newChatHistory);
+    setChatHistory(newChatHistory); //new
   
     try {
       const completion = await openai.chat.completions.create({
