@@ -210,7 +210,7 @@ const Home: NextPage = () => {
 
             <main className="flex flex-1 w-full flex-col items-center justify-center text-center px-4 mt-20">
               <h1 className="mx-auto max-w-3xl font-display text-5xl font-bold tracking-normal text-slate-900 sm:text-5xl color-dark-olive-green">
-                chat with your audio files
+                Chat with your audio files
               </h1>
       
               <p className="mx-auto mt-5 max-w-xl text-lg text-slate-700 leading-7">

@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import OpenAI from 'openai';
+import axios from 'axios';
 type TextAlign = 'left' | 'right' | 'center';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface ChatGptProps {
   transcript: string;
@@ -28,28 +31,20 @@ export const ChatGpt: React.FC<ChatGptProps> = ({ transcript }) => {
   const chatHistoryEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-
     const initialMessage = [
-      { role: "system", content: "You are an assistant who will help the user answer any questions regarding the attached transcript." },
+      { role: "system", content: "You are an assistant who will consisely answer any questions regarding the attached transcript. (Max 3 sentences)" },
     ];
-
     const assistantMessage = [
       { role: "assistant", content: "Ask away!" }
     ];
-
     const chunkSize = 1500; // Adjust this size according to token limits
     const transcriptChunks = chunkTranscript(transcript, chunkSize);
     const transcriptMessages = transcriptChunks.map(chunk => ({ role: "user", content: chunk }));
-
     setChatHistory([...initialMessage, ...transcriptMessages, ...assistantMessage]);
   }, [transcript]);
 
   const lastIndexRef = useRef<number | null>(null); //
 
-  
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,12 +55,11 @@ export const ChatGpt: React.FC<ChatGptProps> = ({ transcript }) => {
     setChatHistory(newChatHistory); //new
   
     try {
-      const completion = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
-        messages: [{role: 'user', content: 'prompt' }],
-      });
-      const responseMessage = completion.choices[0].message.content || '';
-      setChatHistory([...newChatHistory, { role: 'assistant', content: responseMessage }]);
+      console.log('New chat history:', newChatHistory);
+      const response = await axios.post('/api/openai',  { messages: newChatHistory } );
+      console.log('Response from API:', response.data);
+      setChatHistory([...newChatHistory, { role: 'assistant', content: response.data }]);
+      return response.data;
     } catch (err) {
       setError('An error occurred while fetching the response.');
       console.error(err);
@@ -76,8 +70,6 @@ export const ChatGpt: React.FC<ChatGptProps> = ({ transcript }) => {
   };
 
   useEffect(() => {
-    // This will run only on the initial render
-
       lastIndexRef.current = chatHistory.findIndex(
         (message) => message.role === 'assistant' && message.content === 'Ask away!'
       );
@@ -98,7 +90,10 @@ export const ChatGpt: React.FC<ChatGptProps> = ({ transcript }) => {
       <div style={styles.chatHistory}>
         {lastIndexRef.current !== null && chatHistory.slice(lastIndexRef.current).map((message, index) => (
           <div key={index} style={message.role === 'user' ? styles.userMessage : styles.assistantMessage}>
-            <strong>{message.role === 'user' ? 'You' : 'Assistant'}:</strong> {message.content}
+            <strong>{message.role === 'user' ? 'You' : 'Assistant'}:</strong>  
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {message.content}
+            </ReactMarkdown>
           </div>
         ))}
         {/* Reference element for scrolling */}
