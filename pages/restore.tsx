@@ -199,7 +199,7 @@ const Home: NextPage = () => {
       <main className="flex flex-1 w-full flex-col items-center justify-center text-center px-4 sm:mb-0 mb-8">
         {!file  &&
           (<p className=" mb-1" style={{ fontSize: '2.5rem' }}> 
-            <strong> Chat with your audio files </strong>
+            <strong> Upload your audio file </strong>
           </p>)
         }
         {status === 'unauthenticated' && !file && (

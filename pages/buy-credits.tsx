@@ -107,7 +107,7 @@ export default function Pricing() {
               clipRule="evenodd"
             />
           </svg>
-          Commercial usage of photos
+          Commercial usage of transcripts
         </li>
         <li className="flex gap-x-3">
           <svg
