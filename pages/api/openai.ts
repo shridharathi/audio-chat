@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       apiKey: process.env.OPENAI_API_KEY,
     });
   
-    const { messages } = req.body;
+    const { messages } = req.body; //
   
     try {
       console.log(messages);
