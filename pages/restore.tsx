@@ -20,6 +20,7 @@ import { UploadDropzone } from '@bytescale/upload-widget-react';
 import NSFWFilter from 'nsfw-filter';
 import axios from 'axios';
 
+
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const Home: NextPage = () => {
@@ -141,6 +142,7 @@ const Home: NextPage = () => {
     marginTop: '1rem',
   };
 
+
   async function generateTranscript(file: File) {
 
     if (data?.remainingGenerations <= 0) {
@@ -152,7 +154,6 @@ const Home: NextPage = () => {
     setError(null);
 
     try {
-      // Create FormData instance and append the file
       const formData = new FormData();
       formData.append('file', file);
 
@@ -246,6 +247,11 @@ const Home: NextPage = () => {
               {data?.remainingGenerations != 1 ? "credits" : "credit"}
             </span>{' '}
             left.
+          </p>
+        )}
+        {status === 'authenticated' && data && !file && (
+          <p className="text-slate-500">
+            (Currently only supports files less than 4MB)
           </p>
         )}
 
