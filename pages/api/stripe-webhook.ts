@@ -73,7 +73,7 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
       await prisma.user.update({
         where: {
-          email: userEmail,
+          email: userEmail, //hello
         },
         data: {
           credits: {
