@@ -68,7 +68,7 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
           creditAmount = 100;
           break;
         case 1400:
-          creditAmount = 200;
+          creditAmount = 200; //
           break;
       }
       await prisma.user.update({
