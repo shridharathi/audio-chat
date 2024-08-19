@@ -21,8 +21,9 @@ const cors = Cors({
 });
 
 const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  //console.log(req)
   if (req.method === "POST") {
-    console.log("Webhook received");
+    console.log("Secret", webhookSecret);
     const buf = await buffer(req);
     const sig = req.headers["stripe-signature"]!;
 
