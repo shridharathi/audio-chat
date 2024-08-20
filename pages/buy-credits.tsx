@@ -36,19 +36,20 @@ export default function Pricing() {
             {data?.remainingGenerations}{" "}
             {data?.remainingGenerations > 1 ? "credits" : "credit"}
           </span>
-          . Purchase more below.
+          . Purchase more below!
         </p>
       </main>
       <div className="w-full">
         {session?.user?.email && (
           // @ts-ignore
           //trigger
+          
 
           <stripe-pricing-table 
             pricing-table-id="prctbl_1Pmq9KJIkqJ1xhwkCPD7Bcqt"
             publishable-key="pk_test_51Pmpk0JIkqJ1xhwk1lrPqLNSpSpvBSqr6wNfn2Z7RNoL0tev6KuSsdZxUN7xOeHQd5OZSOJmnpzUhUXNPTI1JvlM00EJxuXzvz"
             client-reference-id={session.user.email}
-            customer-email={session.user.email}
+            customer-email={session.user.email} 
           />
           /*
           <stripe-pricing-table
