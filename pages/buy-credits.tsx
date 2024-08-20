@@ -43,19 +43,19 @@ export default function Pricing() {
         {session?.user?.email && (
           // @ts-ignore
           //trigger
-          
-          <stripe-pricing-table
-            pricing-table-id="prctbl_1PpPMOJIkqJ1xhwk1g5fkTcM"
-            publishable-key="pk_live_51Pmpk0JIkqJ1xhwkX7i0mjWSqrKwwwAitQBy27YKCQGHfhqqeiTpGJoFTtphqLui5FkVkWGNG4Dt04dQxdUmgxUY00FU3JkBKb"
-            client-reference-id={session.user.email}
-            customer-email={session.user.email}
+
+          <stripe-pricing-table 
+          pricing-table-id="prctbl_1PphhpJIkqJ1xhwkLPuFlqMh"
+          publishable-key="pk_test_51Pmpk0JIkqJ1xhwk1lrPqLNSpSpvBSqr6wNfn2Z7RNoL0tev6KuSsdZxUN7xOeHQd5OZSOJmnpzUhUXNPTI1JvlM00EJxuXzvz"
+          client-reference-id={session.user.email}
+          customer-email={session.user.email}
           />
 
         )}
       </div>
       <div className="mt-10 text-center">
         <h4 className="flex-none leading-6 mt-2 text-2xl font-bold tracking-tight text-white sm:text-5xl">
-          What’s included:
+          What’s included
         </h4>
       </div>
       <ul
